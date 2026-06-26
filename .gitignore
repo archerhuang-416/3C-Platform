@@ -1,0 +1,22 @@
+# Secrets / credentials — never commit
+API-KEY
+**/.env
+**/.env.local
+*.key
+*.pem
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/skills/
+.agents/skills/
+
+# Dependencies
+node_modules/
+
+# Caches
+**/.cache/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

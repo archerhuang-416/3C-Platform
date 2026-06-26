@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专家纪要 · 3C AI 工作台</title>
+<style>
+/* =========================================================
+   3C AI 工作台 — 统一设计系统
+   京东红主色 · 浅色企业后台风格
+   ========================================================= */
+
+:root {
+  color-scheme: light;
+
+  /* 品牌 & 功能色 */
+  --jd-red: #E1251B;
+  --jd-red-dark: #C01710;
+  --jd-red-soft: #FDECEA;
+  --jd-orange: #FF6A00;
+  --blue: #2F6BFF;
+  --blue-soft: #EAF1FF;
+  --green: #18A058;
+  --green-soft: #E8F7EF;
+  --gold: #E6A23C;
+  --gold-soft: #FBF2E2;
+  --purple: #7B5CFF;
+  --purple-soft: #F0ECFF;
+
+  /* 中性色 */
+  --bg: #F4F5F7;
+  --bg-deep: #EDEEF1;
+  --card: #FFFFFF;
+  --border: #E8EAED;
+  --border-strong: #D9DCE1;
+  --text: #1F2329;
+  --text-2: #4E5969;
+  --text-3: #86909C;
+  --text-4: #C9CDD4;
+
+  /* 尺寸 */
+  --sidebar-w: 224px;
+  --topbar-h: 60px;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.03);
+  --shadow: 0 4px 16px rgba(20,30,55,.06);
+  --shadow-lg: 0 8px 30px rgba(20,30,55,.10);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei", "Hiragino Sans GB", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; }
+
+/* ---------- 滚动条 ---------- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #d4d7dd; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #bcc0c7; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* =========================================================
+   布局：顶部横向导航 + 内容区（网站结构）
+   ========================================================= */
+:root { --header-h: 64px; }
+
+.site-header {
+  position: sticky; top: 0; z-index: 30;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  height: var(--header-h);
+  display: flex; align-items: center; gap: 26px;
+  padding: 0 32px; max-width: 1480px; margin: 0 auto;
+}
+
+/* 品牌 */
+.brand { display: flex; align-items: center; gap: 11px; flex: 0 0 auto; }
+.brand__logo {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--jd-red), var(--jd-orange));
+  color: #fff; display: grid; place-items: center;
+  font-weight: 800; font-size: 15px; box-shadow: 0 4px 10px rgba(225,37,27,.28);
+}
+.brand__name { font-size: 16px; font-weight: 800; letter-spacing: .3px; line-height: 1.1; }
+.brand__name small { display: block; font-size: 10.5px; color: var(--text-3); font-weight: 500; letter-spacing: .5px; margin-top: 2px; }
+
+/* 横向导航 */
+.topnav { display: flex; align-items: stretch; height: 100%; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.topnav::-webkit-scrollbar { display: none; }
+.topnav__item {
+  position: relative; height: var(--header-h); display: flex; align-items: center; gap: 6px;
+  padding: 0 15px; color: var(--text-2); font-weight: 500; font-size: 14px;
+  cursor: pointer; white-space: nowrap; transition: color .15s;
+}
+.topnav__item:hover { color: var(--text); }
+.topnav__item.active { color: var(--jd-red); font-weight: 600; }
+.topnav__item.active::after {
+  content: ""; position: absolute; left: 15px; right: 15px; bottom: -1px;
+  height: 3px; background: var(--jd-red); border-radius: 3px 3px 0 0;
+}
+.topnav__badge {
+  background: var(--jd-red); color: #fff; font-size: 10.5px;
+  min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
+  display: grid; place-items: center; font-weight: 600;
+}
+
+/* 右侧操作区 */
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.topbar__search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid transparent;
+  border-radius: 20px; padding: 7px 14px; width: 190px; transition: all .15s;
+}
+.topbar__search:focus-within { background: #fff; border-color: var(--jd-red); width: 230px; }
+.topbar__search input { border: 0; background: transparent; outline: none; flex: 1; font-size: 13px; color: var(--text); min-width: 0; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  color: var(--text-2); position: relative; transition: background .15s;
+}
+.icon-btn:hover { background: var(--bg); }
+.icon-btn .dot {
+  position: absolute; top: 8px; right: 9px; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--jd-red); border: 1.5px solid #fff;
+}
+.topbar__user { display: flex; align-items: center; gap: 9px; cursor: pointer; padding-left: 6px; }
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: #fff; display: grid; place-items: center; font-weight: 600; font-size: 13px;
+}
+.topbar__user-meta { line-height: 1.2; }
+.topbar__user-meta b { font-size: 13px; }
+.topbar__user-meta span { display: block; font-size: 11px; color: var(--text-3); }
+
+/* 内容区 */
+.page { max-width: 1480px; margin: 0 auto; padding: 26px 32px 56px; }
+
+@media (max-width: 1100px) {
+  .topbar__user-meta { display: none; }
+  .topbar__search { width: 44px; padding: 7px; }
+  .topbar__search input { display: none; }
+  .topbar__search:focus-within { width: 190px; padding: 7px 14px; }
+  .topbar__search:focus-within input { display: block; }
+}
+@media (max-width: 760px) {
+  .header-inner { padding: 0 16px; gap: 14px; }
+  .page { padding: 18px 16px 40px; }
+  .brand__name small { display: none; }
+}
+
+/* ---- 内容容器 ---- */
+.content { padding: 22px 24px 40px; }
+.page-head { margin-bottom: 18px; }
+.page-head h1 { font-size: 20px; margin: 0 0 4px; font-weight: 700; }
+.page-head p { margin: 0; color: var(--text-3); font-size: 13px; }
+
+/* =========================================================
+   通用组件
+   ========================================================= */
+
+/* 卡片 */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm);
+}
+.card__head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 18px; border-bottom: 1px solid var(--border);
+}
+.card__head h3 { margin: 0; font-size: 15px; font-weight: 700; }
+.card__head .sub { color: var(--text-3); font-size: 12px; }
+.card__head .spacer { margin-left: auto; }
+.card__body { padding: 18px; }
+.card__body--flush { padding: 0; }
+
+/* 栅格 */
+.grid { display: grid; gap: 16px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-6 { grid-template-columns: repeat(6, 1fr); }
+@media (max-width: 1200px){ .grid-4{grid-template-columns:repeat(2,1fr)} .grid-6{grid-template-columns:repeat(3,1fr)} .grid-3{grid-template-columns:repeat(2,1fr)} }
+@media (max-width: 820px){ .grid-2,.grid-3,.grid-4,.grid-6{grid-template-columns:1fr} }
+
+/* KPI 统计卡 */
+.stat {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm);
+  position: relative; overflow: hidden;
+}
+.stat__label { color: var(--text-3); font-size: 13px; display: flex; align-items: center; gap: 7px; }
+.stat__icon { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; }
+.stat__value { font-size: 27px; font-weight: 800; margin: 10px 0 6px; letter-spacing: -.5px; }
+.stat__value small { font-size: 14px; font-weight: 600; color: var(--text-3); margin-left: 2px; }
+.stat__foot { font-size: 12px; color: var(--text-3); display: flex; align-items: center; gap: 6px; }
+.trend { font-weight: 600; display: inline-flex; align-items: center; gap: 2px; }
+.trend.up { color: var(--green); }
+.trend.down { color: var(--jd-red); }
+
+/* 标签 / 徽章 */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; padding: 2px 9px; border-radius: 20px;
+  background: var(--bg-deep); color: var(--text-2); font-weight: 500; line-height: 1.8;
+}
+.tag--red{background:var(--jd-red-soft);color:var(--jd-red)}
+.tag--blue{background:var(--blue-soft);color:var(--blue)}
+.tag--green{background:var(--green-soft);color:var(--green)}
+.tag--gold{background:var(--gold-soft);color:var(--gold)}
+.tag--purple{background:var(--purple-soft);color:var(--purple)}
+.tag--dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* 按钮 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong);
+  background: #fff; color: var(--text); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .15s; white-space: nowrap; font-family: inherit;
+}
+.btn:hover { border-color: var(--jd-red); color: var(--jd-red); }
+.btn--primary { background: var(--jd-red); border-color: var(--jd-red); color: #fff; }
+.btn--primary:hover { background: var(--jd-red-dark); border-color: var(--jd-red-dark); color: #fff; }
+.btn--ai {
+  background: linear-gradient(120deg, #7B5CFF, #2F6BFF); border: 0; color: #fff;
+  box-shadow: 0 4px 12px rgba(123,92,255,.3);
+}
+.btn--ai:hover { color: #fff; filter: brightness(1.05); }
+.btn--ghost { border-color: transparent; background: var(--bg); }
+.btn--ghost:hover { background: var(--bg-deep); color: var(--text); border-color: transparent; }
+.btn--sm { padding: 5px 11px; font-size: 12px; }
+.btn--icon { padding: 7px; }
+
+/* 筛选条 */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.select, .input {
+  appearance: none; background: #fff; border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm); padding: 8px 30px 8px 12px; font-size: 13px;
+  color: var(--text); cursor: pointer; font-family: inherit; min-width: 130px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2386909C' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.input { padding: 8px 12px; cursor: text; background-image: none; }
+.select:focus, .input:focus { outline: none; border-color: var(--jd-red); }
+
+/* 表格 */
+.table-wrap { overflow-x: auto; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th {
+  text-align: left; color: var(--text-3); font-weight: 600; font-size: 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border); background: #FAFBFC;
+  white-space: nowrap; position: sticky; top: 0;
+}
+.tbl td { padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--text-2); }
+.tbl tbody tr:hover { background: #FAFBFC; }
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl .strong { color: var(--text); font-weight: 600; }
+.cell-actions { display: flex; gap: 6px; }
+.link { color: var(--blue); cursor: pointer; }
+.link:hover { text-decoration: underline; }
+.link--red { color: var(--jd-red); }
+
+/* 进度条 */
+.bar { height: 6px; border-radius: 6px; background: var(--bg-deep); overflow: hidden; }
+.bar > i { display: block; height: 100%; border-radius: 6px; background: var(--jd-red); }
+
+/* 列表项（情报 / 政策 / 报告） */
+.list-item {
+  display: flex; gap: 14px; padding: 16px 18px;
+  border-bottom: 1px solid var(--border); transition: background .15s; cursor: pointer;
+}
+.list-item:hover { background: #FAFBFC; }
+.list-item:last-child { border-bottom: 0; }
+.li__icon { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; flex: 0 0 42px; }
+.li__body { flex: 1; min-width: 0; }
+.li__title { font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.li__meta { color: var(--text-3); font-size: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+.li__side { text-align: right; color: var(--text-3); font-size: 12px; white-space: nowrap; }
+
+/* AI 面板 */
+.ai-panel {
+  border: 1px solid #E4DBFF; border-radius: var(--radius);
+  background: linear-gradient(180deg, #FAF8FF, #FFFFFF);
+}
+.ai-panel .card__head { border-color: #EFEAFF; }
+.ai-tag {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600;
+  color: var(--purple); background: var(--purple-soft); padding: 3px 10px; border-radius: 20px;
+}
+.ai-text { color: var(--text-2); font-size: 13.5px; line-height: 1.85; }
+.ai-text b { color: var(--text); }
+.ai-bullet { display: flex; gap: 9px; padding: 7px 0; align-items: flex-start; }
+.ai-bullet i { flex: 0 0 18px; width: 18px; height: 18px; border-radius: 50%; background: var(--purple-soft); color: var(--purple); display: grid; place-items: center; font-size: 11px; font-style: normal; font-weight: 700; margin-top: 2px; }
+
+/* 图表容器 */
+.chart { width: 100%; height: 300px; }
+.chart--sm { height: 220px; }
+.chart--lg { height: 360px; }
+
+/* 分隔 / 杂项 */
+.muted { color: var(--text-3); }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.flex { display: flex; align-items: center; gap: 10px; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.wrap { flex-wrap: wrap; }
+.mt-0{margin-top:0}.mb-0{margin-bottom:0}
+.section-gap{margin-top:16px}
+
+/* 空状态 */
+.empty { text-align: center; padding: 50px 20px; color: var(--text-3); }
+.empty svg { opacity: .35; margin-bottom: 10px; }
+
+/* 弹窗（演示用） */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #1F2329; color: #fff; padding: 11px 20px; border-radius: 8px;
+  font-size: 13px; box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none;
+  transition: all .25s; z-index: 100; display: flex; align-items: center; gap: 8px;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* 雷达大盘头图 */
+.hero {
+  border-radius: var(--radius); padding: 22px 24px; color: #fff;
+  background: linear-gradient(120deg, #E1251B 0%, #FF6A00 100%);
+  position: relative; overflow: hidden; box-shadow: var(--shadow);
+}
+.hero::after {
+  content:""; position:absolute; right:-40px; top:-40px; width:200px; height:200px;
+  background: rgba(255,255,255,.12); border-radius: 50%;
+}
+.hero h2 { margin: 0 0 6px; font-size: 19px; }
+.hero p { margin: 0; opacity: .92; font-size: 13px; max-width: 60%; }
+.hero__stats { display: flex; gap: 36px; margin-top: 18px; position: relative; }
+.hero__stat b { font-size: 24px; display: block; }
+.hero__stat span { font-size: 12px; opacity: .9; }
+                         
+</style>
+<style>
+  /* ===== 报告库（参考 3C商分报告库 布局） ===== */
+  .rl-tabs { display:flex; align-items:center; gap:4px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+  .rl-tab {
+    appearance:none; border:0; background:transparent; font-family:inherit; cursor:pointer;
+    padding:12px 18px; font-size:15px; font-weight:600; color:var(--text-3);
+    position:relative; transition:color .15s;
+  }
+  .rl-tab:hover { color:var(--text); }
+  .rl-tab.active { color:var(--jd-red); }
+  .rl-tab.active::after { content:""; position:absolute; left:18px; right:18px; bottom:-1px; height:3px; background:var(--jd-red); border-radius:3px 3px 0 0; }
+  .rl-stats { margin-left:auto; display:flex; gap:22px; color:var(--text-3); font-size:13px; }
+  .rl-stats b { color:var(--text); font-weight:700; margin-left:5px; }
+
+  .rl-shell { display:grid; grid-template-columns:236px 1fr; gap:20px; align-items:start; }
+  @media (max-width:900px){ .rl-shell{ grid-template-columns:1fr; } }
+
+  /* 侧栏 */
+  .rl-sidebar { position:sticky; top:84px; display:flex; flex-direction:column; gap:16px; }
+  .sb-block { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow-sm); }
+  .sb-block h2 { font-size:12px; font-weight:700; color:var(--text-3); letter-spacing:.5px; margin:0 0 10px; }
+  .sb-list { display:flex; flex-direction:column; gap:2px; }
+  .sb-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:var(--radius-sm); font-size:13px; color:var(--text-2); cursor:pointer; transition:all .12s; }
+  .sb-item:hover { background:var(--bg); color:var(--text); }
+  .sb-item.active { background:var(--jd-red-soft); color:var(--jd-red); font-weight:600; }
+  .sb-item .cnt { margin-left:auto; font-size:11px; color:var(--text-4); }
+  .sb-item.active .cnt { color:var(--jd-red); }
+  .sb-recent .rc { padding:8px 0; border-bottom:1px dashed var(--border); cursor:pointer; }
+  .sb-recent .rc:last-child { border-bottom:0; }
+  .sb-recent .rc:hover .rc-t { color:var(--jd-red); }
+  .rc-t { font-size:12.5px; color:var(--text-2); line-height:1.5; }
+  .rc-d { font-size:11px; color:var(--text-4); margin-top:2px; }
+
+  /* 搜索条 */
+  .rl-search { display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:10px 14px; box-shadow:var(--shadow-sm); margin-bottom:18px; }
+  .rl-search .si { color:var(--text-3); font-size:16px; }
+  .rl-search input { flex:1; border:0; outline:0; font-size:14px; font-family:inherit; background:transparent; color:var(--text); min-width:0; }
+  .sort-control { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-3); white-space:nowrap; }
+  .sort-control select { appearance:none; border:1px solid var(--border-strong); border-radius:var(--radius-sm); padding:6px 26px 6px 10px; font-size:12.5px; font-family:inherit; color:var(--text); cursor:pointer; background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2386909C' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center; }
+
+  /* 列表标题 */
+  .rl-heading { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:14px; }
+  .eyebrow { font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--jd-red); text-transform:uppercase; margin:0 0 4px; }
+  .rl-heading h1 { font-size:21px; margin:0; font-weight:700; }
+  .rl-heading .rmeta { color:var(--text-3); font-size:13px; }
+
+  /* ===== 报告卡片（对齐参考站样式） ===== */
+  .rl-list { display:flex; flex-direction:column; gap:14px; }
+  .report-card {
+    display:flex; gap:22px; align-items:stretch;
+    background:linear-gradient(120deg,#FFFFFF 0%, #F4F8FF 100%);
+    border:1px solid #E6ECF7; border-radius:14px; padding:22px 24px;
+    box-shadow:var(--shadow-sm); transition:all .15s;
+  }
+  .report-card:hover { box-shadow:var(--shadow); transform:translateY(-1px); border-color:#CFDDF5; }
+  .rc-main { flex:1; min-width:0; cursor:pointer; }
+  .rc-toptags { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:11px; }
+  .rc-cat { background:#E8EFFF; color:#2F6BFF; font-weight:600; font-size:12px; padding:3px 11px; border-radius:6px; }
+  .rc-ent { background:#EEF1F6; color:var(--text-2); font-size:12px; padding:3px 11px; border-radius:6px; }
+  .rc-date { background:#EEF1F6; color:var(--text-3); font-size:12px; padding:3px 11px; border-radius:6px; }
+  .rc-title { font-size:18px; font-weight:700; color:var(--text); line-height:1.45; }
+  .rc-main:hover .rc-title { color:var(--jd-red); }
+  .rc-sum { color:var(--text-2); font-size:13.5px; line-height:1.78; margin:9px 0 0; }
+  .rc-kw { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .rc-kw span { background:#EAF1FF; color:#2F6BFF; font-size:12px; font-weight:500; padding:3px 11px; border-radius:6px; }
+  .rc-actions { flex:0 0 102px; display:flex; flex-direction:column; gap:10px; justify-content:center; align-items:stretch; }
+  .rc-read, .rc-pdf { border-radius:22px; padding:10px 0; font-size:13.5px; font-weight:600; cursor:pointer; font-family:inherit; transition:.15s; text-align:center; }
+  .rc-read { background:#1F2329; color:#fff; border:0; }
+  .rc-read:hover { background:#000; }
+  .rc-pdf { background:#fff; color:#2F6BFF; border:1px solid #CFDDF5; }
+  .rc-pdf:hover { background:#EAF1FF; }
+  @media (max-width:640px){ .report-card{ flex-direction:column; } .rc-actions{ flex-direction:row; flex-basis:auto; } .rc-read,.rc-pdf{ flex:1; padding:9px 18px; } }
+
+  /* 阅读视图 */
+  .reader { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-sm); }
+  .reader-top { display:flex; align-items:center; gap:12px; padding:14px 20px; border-bottom:1px solid var(--border); }
+  .reader-body { padding:24px 28px; }
+  .reader-body h1 { font-size:23px; margin:0 0 12px; line-height:1.35; }
+  .reader-body .r-meta { display:flex; flex-wrap:wrap; gap:10px; color:var(--text-3); font-size:13px; margin-bottom:18px; padding-bottom:18px; border-bottom:1px solid var(--border); }
+  .reader-body p { color:var(--text-2); line-height:1.9; font-size:14.5px; }
+  .reader-body h3 { font-size:16px; margin:22px 0 10px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 子板块标签：专家纪要 / 研报 -->
+  <div class="rl-tabs">
+    <button class="rl-tab active" data-tab="minutes">专家纪要</button>
+    <div class="rl-stats">
+      <span>纪要<b id="statTotal">0</b></span>
+      <span>更新<b>06-24</b></span>
+    </div>
+  </div>
+
+  <div class="rl-shell">
+    <!-- 左侧筛选 -->
+    <aside class="rl-sidebar">
+      <div id="sidebarFilters"></div>
+      <div class="sb-block sb-recent">
+        <h2>最近浏览</h2>
+        <div id="recentList"></div>
+      </div>
+    </aside>
+
+    <!-- 主区 -->
+    <section class="rl-main">
+      <!-- 列表态 -->
+      <div id="listView">
+        <form class="rl-search" onsubmit="return doSearch(event)">
+          <span class="si">⌕</span>
+          <input id="searchInput" type="search" placeholder="搜索报告标题，例如 拼多多、Temu、iPhone、出货量" oninput="render()">
+          <label class="sort-control">
+            <span>时间</span>
+            <select id="sortOrder" onchange="render()">
+              <option value="date-desc">最新优先</option>
+              <option value="date-asc">最早优先</option>
+            </select>
+          </label>
+          <button class="btn btn--primary btn--sm" type="submit">搜索</button>
+        </form>
+
+        <div class="rl-heading">
+          <div>
+            <p class="eyebrow" id="eyebrow">Expert Minutes</p>
+            <h1 id="resultTitle">全部专家纪要</h1>
+          </div>
+          <span class="rmeta" id="resultMeta"></span>
+        </div>
+
+        <div class="rl-list" id="reportList"></div>
+      </div>
+
+      <!-- 阅读态 -->
+      <div id="readerView" style="display:none">
+        <div class="reader">
+          <div class="reader-top">
+            <button class="btn btn--sm" onclick="closeReader()">← 返回列表</button>
+            <div class="spacer" style="margin-left:auto"></div>
+            <button class="btn btn--sm" onclick="Workbench.toast('已收藏')">☆ 收藏</button>
+            <button class="btn btn--sm" onclick="Workbench.toast('已导出 PDF')">导出</button>
+            <button class="btn btn--ai btn--sm" onclick="Workbench.toast('AI 已生成全文摘要')">✦ AI 摘要</button>
+          </div>
+          <div class="reader-body" id="readerBody"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script>window.PAGE = { id: 'expert' };</script>
+<script>
+(function(){
+  function mount(){var app=document.getElementById('app');var inner=app?app.innerHTML:'';
+    document.body.innerHTML='<main class="page">'+inner+'</main><div class="toast" id="toast"></div>';
+    if(typeof window.onPageReady==='function')window.onPageReady();}
+  var t;window.Workbench={
+    toast:function(m){var el=document.getElementById('toast');if(!el)return;el.innerHTML='\u2713 '+m;el.classList.add('show');clearTimeout(t);t=setTimeout(function(){el.classList.remove('show')},2200);},
+    palette:['#E1251B','#2F6BFF','#18A058','#FF6A00','#7B5CFF','#E6A23C','#36CFC9'],axisStyle:{}
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
+</script>
+<script>
+// ====== 数据 ======
+const DATA = {
+  minutes: {
+    eyebrow:'Expert Minutes', cat:'专家纪要', title:'全部专家纪要',
+    facets:[
+      {key:'platform', name:'平台', opts:['京东','天猫','拼多多','抖音','Temu','快手']},
+      {key:'brand',    name:'品牌', opts:['苹果','华为','小米','OPPO','vivo','荣耀','联想']},
+      {key:'retail',   name:'即时零售平台', opts:['京东到家','美团闪购','饿了么','抖音小时达']},
+    ],
+    items:[
+      {id:'m1', title:'拼多多 3C 数码业务增长路径专家交流纪要', date:'2026-06-22', platform:'拼多多', brand:'', retail:'', src:'某头部 3C 代运营负责人',
+       sum:'拆解拼多多百亿补贴在 3C 品类的投放逻辑、白牌与品牌货盘结构，以及对京东自营中端价格带的分流影响。',
+       kw:['拼多多','百亿补贴','白牌','价格带','分流'],
+       points:['百亿补贴向品牌机型倾斜，旗舰引流款占比提升；','白牌配件仍是流量基本盘，毛利低但复购高；','对 ¥2000-3000 价格带分流明显，建议补贴对冲。']},
+      {id:'m2', title:'Temu 出海 3C 品类供应链与定价调研纪要', date:'2026-06-20', platform:'Temu', brand:'', retail:'', src:'跨境供应链专家',
+       sum:'围绕 Temu 全托管模式下 3C 配件的选品、定价与履约时效，分析其对国内供给端的虹吸效应。',
+       kw:['Temu','全托管','跨境','供应链','定价'],
+       points:['全托管压价显著，配件厂利润空间被压缩；','海外仓布局加快，时效向 5 日内靠拢；','国内优质产能外流，需关注供给稳定性。']},
+      {id:'m3', title:'即时零售手机品类履约模式专家纪要', date:'2026-06-18', platform:'京东', brand:'', retail:'京东到家', src:'即时零售业务负责人',
+       sum:'手机在即时零售场景的履约成本、门店前置库存与客群画像，评估「小时达」对自营电商的协同价值。',
+       kw:['即时零售','京东到家','履约','前置库存'],
+       points:['手机即时零售客群偏应急/礼赠场景；','前置库存 SKU 精简至爆款为主；','与自营形成场景互补而非替代。']},
+      {id:'m4', title:'苹果 iPhone 16 系列渠道动销与价盘专家纪要', date:'2026-06-15', platform:'天猫', brand:'苹果', retail:'', src:'果链渠道资深从业者',
+       sum:'iPhone 16 系列各渠道动销节奏、价盘管控与以旧换新带动效应，研判 618 后价格走势。',
+       kw:['苹果','iPhone 16','价盘','以旧换新'],
+       points:['Pro 系列动销强于标准版；','渠道价盘管控趋严，乱价空间收窄；','以旧换新撬动换机需求明显。']},
+      {id:'m5', title:'华为终端供应链与产能爬坡调研纪要', date:'2026-06-12', platform:'', brand:'华为', retail:'', src:'终端供应链专家',
+       sum:'华为终端在芯片、存储等关键料的备货策略与产能爬坡进度，评估下半年供给弹性。',
+       kw:['华为','供应链','产能','备货'],
+       points:['关键料备货周期拉长以对冲涨价；','产能爬坡好于预期；','高端机型供给优先级最高。']},
+      {id:'m6', title:'抖音电商 3C 直播带货打法专家纪要', date:'2026-06-08', platform:'抖音', brand:'', retail:'', src:'抖音 3C 类目操盘手',
+       sum:'抖音 3C 直播的选品节奏、达人矩阵与流量成本，分析其对货架电商的冲击边界。',
+       kw:['抖音','直播带货','达人矩阵','流量成本'],
+       points:['直播以新品首发+低价爆款拉量；','达人矩阵分层运营；','流量成本上行，ROI 承压。']},
+      {id:'m7', title:'小米 AIoT 与手机协同战略专家纪要', date:'2026-06-05', platform:'', brand:'小米', retail:'', src:'IoT 行业研究专家',
+       sum:'小米手机×AIoT 生态协同的用户价值与变现路径，及其对 3C 配件连带购买的拉动。',
+       kw:['小米','AIoT','生态协同','连带购买'],
+       points:['生态连带购买率持续提升；','AIoT 成为留存关键；','配件附加值空间可观。']},
+    ],
+  },
+  research: {
+    eyebrow:'Research Report', cat:'研报', title:'全部研报',
+    facets:[
+      {key:'org',      name:'机构', opts:['中金公司','中信证券','华泰证券','国泰君安','招商证券']},
+      {key:'industry', name:'行业', opts:['智能手机','PC/笔电','可穿戴','半导体','消费电子']},
+      {key:'type',     name:'类型', opts:['深度报告','业绩点评','行业月报','数据跟踪']},
+    ],
+    items:[
+      {id:'r1', title:'2026 年智能手机出货量中期展望', date:'2026-06-23', org:'中金公司', industry:'智能手机', type:'深度报告', src:'中金电子团队',
+       sum:'上修全年国内智能手机出货量预期至 +6%，高端化与以旧换新为主要驱动，存储涨价构成成本扰动。',
+       kw:['智能手机','出货量','高端化','存储涨价'],
+       points:['全年出货量预期上修至 +6%；','高端价位段（¥6000+）份额持续提升；','存储涨价对中低端毛利形成压力。']},
+      {id:'r2', title:'消费电子板块 6 月数据跟踪月报', date:'2026-06-21', org:'中信证券', industry:'消费电子', type:'行业月报', src:'中信电子团队',
+       sum:'6 月线上消费电子零售额同比 +11.3%，手机与笔电增速领先，建议关注 AI 终端弹性标的。',
+       kw:['消费电子','月度数据','AI 终端'],
+       points:['线上零售额同比 +11.3%；','手机/笔电增速领先；','AI 终端为下半年主线。']},
+      {id:'r3', title:'AI PC 渗透率与换机周期深度报告', date:'2026-06-19', org:'华泰证券', industry:'PC/笔电', type:'深度报告', src:'华泰计算机团队',
+       sum:'AI PC 有望开启新一轮换机周期，预计 2027 年渗透率超 40%，利好整机与上游算力供应链。',
+       kw:['AI PC','渗透率','换机周期','算力'],
+       points:['2027 年 AI PC 渗透率有望超 40%；','换机周期或缩短至 3 年内；','整机与算力链同步受益。']},
+      {id:'r4', title:'存储芯片价格上行对终端影响点评', date:'2026-06-16', org:'国泰君安', industry:'半导体', type:'业绩点评', src:'国君电子团队',
+       sum:'存储现货价连续三月上行，预计向终端 BOM 成本传导 3%-5%，中低端机型与配件毛利承压。',
+       kw:['存储芯片','成本传导','毛利'],
+       points:['存储现货价连续 3 月上行；','向终端传导 3%-5% 成本；','中低端机型毛利受压最大。']},
+      {id:'r5', title:'可穿戴设备市场季度跟踪报告', date:'2026-06-11', org:'招商证券', industry:'可穿戴', type:'数据跟踪', src:'招商电子团队',
+       sum:'Q2 可穿戴出货同比 +9%，智能手表与 TWS 耳机为主力，健康功能成为差异化竞争焦点。',
+       kw:['可穿戴','智能手表','TWS','健康功能'],
+       points:['Q2 出货同比 +9%；','手表/TWS 为主力品类；','健康功能驱动差异化。']},
+      {id:'r6', title:'折叠屏手机供应链与成本拆解', date:'2026-06-07', org:'中金公司', industry:'智能手机', type:'深度报告', src:'中金电子团队',
+       sum:'折叠屏 BOM 成本随铰链与屏幕国产化持续下行，2026 年有望下探至 ¥5000 价位带放量。',
+       kw:['折叠屏','BOM 成本','国产化','放量'],
+       points:['铰链/屏幕国产化加速降本；','2026 年下探 ¥5000 价位带；','放量拐点临近。']},
+    ],
+  },
+};
+
+// ====== 状态 ======
+const state = { tab:'minutes', filters:{}, q:'', sort:'date-desc' };
+const recent = [];
+
+function onPageReady(){
+  document.getElementById('statTotal').textContent = DATA.minutes.items.length;
+  switchTab('minutes');
+}
+
+function switchTab(tab){
+  state.tab = tab; state.filters = {}; state.q='';
+  const si = document.getElementById('searchInput'); if(si) si.value='';
+  document.querySelectorAll('.rl-tab').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  closeReader();
+  renderSidebar();
+  render();
+}
+
+function renderSidebar(){
+  const cfg = DATA[state.tab];
+  const items = cfg.items;
+  let html = '';
+  cfg.facets.forEach(f=>{
+    const opts = f.opts.map(o=>{
+      const cnt = items.filter(it=> it[f.key]===o).length;
+      const active = state.filters[f.key]===o;
+      return `<div class="sb-item ${active?'active':''}" onclick="toggleFilter('${f.key}','${o}')"><span>${o}</span><span class="cnt">${cnt}</span></div>`;
+    }).join('');
+    const allActive = !state.filters[f.key];
+    html += `<div class="sb-block"><h2>${f.name}</h2><div class="sb-list">
+      <div class="sb-item ${allActive?'active':''}" onclick="toggleFilter('${f.key}','')"><span>全部</span><span class="cnt">${items.length}</span></div>
+      ${opts}</div></div>`;
+  });
+  document.getElementById('sidebarFilters').innerHTML = html;
+  renderRecent();
+}
+
+function renderRecent(){
+  const el = document.getElementById('recentList');
+  if(!recent.length){ el.innerHTML = '<p class="muted" style="font-size:12px;margin:2px 0">暂无浏览记录</p>'; return; }
+  el.innerHTML = recent.slice(0,5).map(r=>`<div class="rc" onclick="openReader('${r.tab}','${r.id}')"><div class="rc-t">${r.title}</div><div class="rc-d">${r.date}</div></div>`).join('');
+}
+
+function toggleFilter(key, val){
+  if(val==='' ) delete state.filters[key];
+  else state.filters[key] = (state.filters[key]===val) ? undefined : val;
+  if(state.filters[key]===undefined) delete state.filters[key];
+  renderSidebar(); render();
+}
+
+function doSearch(e){ e.preventDefault(); state.q = document.getElementById('searchInput').value.trim(); render(); return false; }
+
+function render(){
+  const cfg = DATA[state.tab];
+  state.q = document.getElementById('searchInput').value.trim();
+  state.sort = document.getElementById('sortOrder').value;
+  document.getElementById('eyebrow').textContent = cfg.eyebrow;
+
+  let list = cfg.items.filter(it=>{
+    for(const k in state.filters){ if(state.filters[k] && it[k]!==state.filters[k]) return false; }
+    if(state.q && !it.title.includes(state.q) && !it.sum.includes(state.q)) return false;
+    return true;
+  });
+  list.sort((a,b)=> state.sort==='date-asc' ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date));
+
+  const f = state.filters;
+  const label = Object.values(f).filter(Boolean).join(' · ');
+  document.getElementById('resultTitle').textContent = label ? `${label} · ${cfg.cat}` : cfg.title;
+  document.getElementById('resultMeta').textContent = `共 ${list.length} 篇`;
+
+  document.getElementById('reportList').innerHTML = list.length ? list.map(it=>{
+    const ent = state.tab==='minutes' ? (it.platform || it.brand || it.retail) : it.org;
+    return `<div class="report-card">
+      <div class="rc-main" onclick="openReader('${state.tab}','${it.id}')">
+        <div class="rc-toptags">
+          <span class="rc-cat">${cfg.cat}</span>
+          ${ent ? `<span class="rc-ent">${ent}</span>` : ''}
+          <span class="rc-date">${it.date}</span>
+        </div>
+        <div class="rc-title">${it.title}</div>
+        <div class="rc-sum">${it.sum}</div>
+        <div class="rc-kw">${it.kw.map(k=>`<span>${k}</span>`).join('')}</div>
+      </div>
+      <div class="rc-actions">
+        <button class="rc-read" onclick="openReader('${state.tab}','${it.id}')">阅读</button>
+        <button class="rc-pdf" onclick="event.stopPropagation();Workbench.toast('正在下载 PDF：${it.title}')">下载PDF</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">未找到匹配的报告，试试调整筛选或关键词</div>';
+}
+
+function openReader(tab, id){
+  const cfg = DATA[tab];
+  const it = cfg.items.find(x=>x.id===id);
+  if(!it) return;
+  if(!recent.find(r=>r.id===id)) recent.unshift({tab, id, title:it.title, date:it.date});
+  const tags = (tab==='minutes' ? [it.platform, it.brand, it.retail] : [it.org, it.industry, it.type]).filter(Boolean);
+  document.getElementById('readerBody').innerHTML = `
+    <h1>${it.title}</h1>
+    <div class="r-meta">
+      <span class="rc-cat">${cfg.cat}</span>
+      ${tags.map(t=>`<span class="tag tag--${tab==='minutes'?'red':'blue'}">${t}</span>`).join('')}
+      <span>来源：${it.src}</span><span>·</span><span>${it.date}</span>
+    </div>
+    <div class="ai-panel card" style="margin-bottom:20px">
+      <div class="card__body">
+        <span class="ai-tag" style="margin-bottom:8px">✦ AI 摘要</span>
+        <p class="ai-text" style="margin:8px 0 0">${it.sum}</p>
+      </div>
+    </div>
+    <h3>核心要点</h3>
+    ${it.points.map((p,i)=>`<div class="ai-bullet"><i>${i+1}</i><div>${p}</div></div>`).join('')}
+    <h3>${tab==='minutes'?'纪要':'研报'}正文</h3>
+    <p>本${tab==='minutes'?'纪要':'研报'}围绕「${it.title}」展开，${it.sum}以下为整理后的关键讨论与数据。受篇幅所限，此处为演示用占位正文：在实际平台中，该区域将渲染完整的报告全文、图表与引用来源，并支持 AI 划词解读、一键改写与多份报告对比。</p>
+    <p>分析师可在右上角对本篇进行收藏、导出或调用 AI 摘要，亦可在左侧「最近浏览」中快速回到此前查看的报告。</p>
+  `;
+  document.getElementById('listView').style.display='none';
+  document.getElementById('readerView').style.display='block';
+  renderRecent();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function closeReader(){
+  const rv = document.getElementById('readerView'); if(rv) rv.style.display='none';
+  const lv = document.getElementById('listView'); if(lv) lv.style.display='block';
+}
+</script>
+</body>
+</html>
