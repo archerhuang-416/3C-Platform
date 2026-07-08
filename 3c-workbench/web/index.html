@@ -1300,16 +1300,19 @@ async function fetchStats() {
 }
 
 async function recordPageview() {
+  const key = 'pv_' + new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem(key)) { fetchStats(); return; }
   try {
     const res = await fetch(COUNTER_API, { method: 'POST' });
     const data = await res.json();
+    localStorage.setItem(key, '1');
     const metaViews = document.getElementById('metaViews');
     if (metaViews) metaViews.textContent = data.total || 0;
     const metaWeekly = document.getElementById('metaWeekly');
     if (metaWeekly) metaWeekly.textContent = data.week || 0;
     const bannerWeekly = document.getElementById('bannerWeeklyViews');
     if (bannerWeekly) bannerWeekly.textContent = data.week || 0;
-  } catch(e) {}
+  } catch(e) { fetchStats(); }
 }
 
 function getLearnCount(idx) {
