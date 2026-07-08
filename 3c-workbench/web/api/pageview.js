@@ -1,4 +1,6 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const redis = Redis.fromEnv();
 
 function getWeekKey() {
   const now = new Date();
@@ -14,17 +16,17 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'POST') {
-      const total = await kv.incr('pv:total');
+      const total = await redis.incr('pv:total');
       const weekKey = getWeekKey();
-      const week = await kv.incr(weekKey);
-      await kv.expire(weekKey, 60 * 60 * 24 * 8);
+      const week = await redis.incr(weekKey);
+      await redis.expire(weekKey, 60 * 60 * 24 * 8);
       return res.status(200).json({ total, week });
     }
 
     // GET
-    const total = (await kv.get('pv:total')) || 0;
+    const total = (await redis.get('pv:total')) || 0;
     const weekKey = getWeekKey();
-    const week = (await kv.get(weekKey)) || 0;
+    const week = (await redis.get(weekKey)) || 0;
     return res.status(200).json({ total, week });
   } catch (e) {
     return res.status(500).json({ error: e.message });
