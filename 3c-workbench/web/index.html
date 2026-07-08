@@ -922,7 +922,7 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
   </div>
   <div class="meta-pill meta-pill--stats">
     <span>📊</span>
-    <span>报告 <strong id="metaTotal">0</strong> 篇<span class="meta-pill__sep">·</span>累计浏览 <strong id="metaViews">10</strong><span class="meta-pill__sep">·</span>本周 <strong id="metaWeekly">10</strong></span>
+    <span>报告 <strong id="metaTotal">0</strong> 篇<span class="meta-pill__sep">·</span>累计浏览 <strong id="metaViews">-</strong><span class="meta-pill__sep">·</span>本周 <strong id="metaWeekly">-</strong></span>
   </div>
 </div>
 </div></header>
@@ -1124,7 +1124,7 @@ function renderExpertBoard(container) {
       </div>
       <div class="banner-metrics">
         <div class="banner-metric"><b id="bannerTotal">0</b><span>纪要总数</span></div>
-        <div class="banner-metric"><b id="bannerWeeklyViews">5</b><span>本周浏览人次</span></div>
+        <div class="banner-metric"><b id="bannerWeeklyViews">-</b><span>本周浏览人次</span></div>
       </div>
     </div>
   </section>
@@ -1196,7 +1196,6 @@ function loadMinutesData() {
     const genDate = DATA.minutes.generatedAt.slice(0, 10);
     const genTime = DATA.minutes.generatedAt.slice(11, 16) || '00:00';
     const bUpd = document.getElementById('bannerWeeklyViews');
-    if (bUpd) bUpd.textContent = '5';
     const ts = document.getElementById('ts');
     if (ts) ts.textContent = genDate + ' ' + genTime;
     // 相对时间
