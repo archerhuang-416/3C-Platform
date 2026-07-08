@@ -905,6 +905,42 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
 .meta-pill__sep{color:#c9b27a;padding:0 1px}
 .board-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;color:#86909C;font-size:15px;gap:12px}
 .board-placeholder svg{width:48px;height:48px;opacity:.3}
+
+/* —— 竞对招聘库模块 —— */
+.talent-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:20px 24px 0}
+.talent-stat{background:#fff;border-radius:10px;padding:18px 20px;border:1px solid #E8EAED;transition:box-shadow .2s}
+.talent-stat:hover{box-shadow:0 4px 16px rgba(20,30,55,.06)}
+.talent-stat__label{font-size:12px;color:#86909C;margin-bottom:6px}
+.talent-stat__value{font-size:22px;font-weight:800;color:#1F2329}
+.talent-stat__sub{font-size:11px;color:#18A058;margin-top:4px}
+.talent-toolbar{display:flex;gap:12px;align-items:center;padding:16px 24px;flex-wrap:wrap}
+.talent-search{flex:1;min-width:200px;padding:10px 16px;border:1px solid #E8EAED;border-radius:8px;font-size:13px;outline:none;transition:border-color .2s}
+.talent-search:focus{border-color:#2F6BFF}
+.talent-chips{display:flex;gap:8px;padding:0 24px;flex-wrap:wrap}
+.talent-chip{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;border-radius:8px;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid #E8EAED;background:#fff;color:#4E5969;transition:all .15s}
+.talent-chip:hover{border-color:#ccc}
+.talent-chip.active{background:#1F2329;color:#fff;border-color:#1F2329;box-shadow:0 2px 8px rgba(31,35,41,.18)}
+.talent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;padding:16px 24px}
+.job-card{background:#fff;border:1px solid #E8EAED;border-radius:10px;padding:18px 20px;transition:box-shadow .2s,transform .2s;cursor:pointer;display:flex;flex-direction:column;gap:10px}
+.job-card:hover{box-shadow:0 6px 20px rgba(20,30,55,.08);transform:translateY(-2px)}
+.job-card__head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.job-card__title{font-size:14px;font-weight:700;color:#1F2329;line-height:1.4}
+.job-card__salary{font-size:13px;font-weight:700;color:#E6A23C;white-space:nowrap}
+.job-card__company{display:inline-flex;align-items:center;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.job-card__meta{font-size:12px;color:#86909C}
+.job-card__tags{display:flex;flex-wrap:wrap;gap:5px}
+.job-card__tag{padding:2px 8px;border-radius:4px;font-size:10.5px;background:#F4F5F7;color:#4E5969}
+.job-card__btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:6px;font-size:12px;font-weight:600;background:#1F2329;color:#fff;border:none;cursor:pointer;align-self:flex-start;transition:background .15s}
+.job-card__btn:hover{background:#333D4B}
+.talent-load-more{display:flex;justify-content:center;padding:20px 24px}
+.talent-load-more button{padding:10px 32px;border-radius:8px;font-size:13px;font-weight:600;background:#fff;color:#4E5969;border:1px solid #E8EAED;cursor:pointer;transition:all .15s}
+.talent-load-more button:hover{border-color:#2F6BFF;color:#2F6BFF}
+.talent-kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;padding:16px 24px}
+.talent-kpi{background:#fff;border:1px solid #E8EAED;border-radius:10px;padding:16px 20px}
+.talent-kpi__title{font-size:12px;color:#86909C;margin-bottom:10px;font-weight:600}
+.talent-kpi__list{display:flex;flex-direction:column;gap:6px}
+.talent-kpi__item{display:flex;justify-content:space-between;font-size:12px;color:#4E5969}
+.talent-kpi__item b{color:#1F2329}
 </style>
 </head>
 <body>
@@ -998,7 +1034,7 @@ const NAV = [
   { id: 'expert', label: '专家纪要' },
   { id: 'sharing', label: '品类课程' },
   { id: 'policy', label: '行业政策库', dev: true },
-  { id: 'talent', label: '竞对招聘库', dev: true },
+  { id: 'talent', label: '竞对招聘库' },
   { id: 'finance', label: '财报智能解读', dev: true },
 ];
 
@@ -1021,6 +1057,8 @@ function switchBoard(id) {
     renderExpertBoard(container);
   } else if (id === 'sharing') {
     renderSharingBoard(container);
+  } else if (id === 'talent') {
+    renderTalentBoard(container);
   } else {
     container.innerHTML = `<div class="board-placeholder">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -1406,6 +1444,173 @@ function renderSharingCards() {
   });
 
   document.getElementById('sharingContent').innerHTML = html;
+}
+
+// ====== 竞对招聘库模块 ======
+const TALENT_API = 'http://120.53.242.129:9090';
+const TALENT_TOKEN = 'KP1WxEZm_ZMgD4fwpKCGppk-wSB_b1k3-BQEUnVlLK4';
+const TALENT_HEADERS = { 'Authorization': `Bearer ${TALENT_TOKEN}` };
+const COMPANY_CLR = {
+  '腾讯': { fg:'#07C160', bg:'#E8F9EF' },
+  '拼多多集团-PDD': { fg:'#E02E24', bg:'#FEF2F2' },
+  '字节跳动': { fg:'#1A1A2E', bg:'#F0F0F5' },
+  '阿里巴巴集团': { fg:'#FF6A00', bg:'#FFF4EB' },
+};
+let _talentPage = 1;
+let _talentQuery = '';
+let _talentCompany = '全部';
+
+async function fetchTalentData(endpoint, params = {}) {
+  const url = new URL(TALENT_API + endpoint);
+  Object.entries(params).forEach(([k,v]) => { if (v) url.searchParams.set(k, v); });
+  const res = await fetch(url, { headers: TALENT_HEADERS });
+  return res.json();
+}
+
+function renderTalentBoard(container) {
+  _talentPage = 1;
+  _talentQuery = '';
+  _talentCompany = '全部';
+  container.innerHTML = `
+  <section class="site-banner" style="background:linear-gradient(135deg,#0F766E 0%,#14B8A6 50%,#5EEAD4 100%)">
+    <div class="banner-inner">
+      <div>
+        <p class="banner-eyebrow">JD · 3C 竞对洞察</p>
+        <h1 class="banner-title">竞对招聘洞察</h1>
+        <p class="banner-sub">实时监控竞对公司招聘动态，洞察行业人才布局与技术方向。</p>
+      </div>
+      <div class="banner-metrics">
+        <div class="banner-metric"><b id="talentTotal">-</b><span>总职位</span></div>
+        <div class="banner-metric"><b id="talentCompanies">-</b><span>监控公司</span></div>
+        <div class="banner-metric"><b id="talentToday">-</b><span>今日新增</span></div>
+        <div class="banner-metric"><b id="talentAvgSalary">-</b><span>平均薪资(K)</span></div>
+      </div>
+    </div>
+  </section>
+  <div class="talent-kpi-row" id="talentKPI"></div>
+  <div class="talent-toolbar">
+    <input class="talent-search" id="talentSearchInput" placeholder="搜索职位关键词（如 Java、AI、产品经理）" onkeydown="if(event.key==='Enter')doTalentSearch()">
+    <button class="job-card__btn" onclick="doTalentSearch()">搜索</button>
+  </div>
+  <div class="talent-chips" id="talentChips"></div>
+  <div class="talent-grid" id="talentGrid"></div>
+  <div class="talent-load-more" id="talentMore"><button onclick="loadMoreJobs()">加载更多</button></div>`;
+
+  loadTalentData();
+}
+
+async function loadTalentData() {
+  try {
+    const [stats, trends] = await Promise.all([
+      fetchTalentData('/api/stats'),
+      fetchTalentData('/api/trends')
+    ]);
+    document.getElementById('talentTotal').textContent = stats.total || 0;
+    document.getElementById('talentCompanies').textContent = stats.companies || 0;
+    document.getElementById('talentToday').textContent = stats.today || 0;
+    document.getElementById('talentAvgSalary').textContent = (trends.avg_salary || 0).toFixed(1);
+
+    renderTalentKPI(trends, stats);
+    renderTalentChips(stats.top_queries || []);
+    loadJobs();
+  } catch(e) { console.warn('招聘数据加载失败:', e); }
+}
+
+function renderTalentKPI(trends, stats) {
+  const hot = (trends.hot_positions || []).slice(0, 5);
+  const salary = trends.salary_dist || [];
+  const keywords = (trends.trending_keywords || []).slice(0, 5);
+  const highSalary = salary.find(s => s.range === '50K+');
+
+  let html = '';
+  html += `<div class="talent-kpi"><div class="talent-kpi__title">🔥 热门岗位 TOP5</div><div class="talent-kpi__list">`;
+  hot.forEach(h => { html += `<div class="talent-kpi__item"><span>${h.position}</span><b>${h.count}</b></div>`; });
+  html += `</div></div>`;
+
+  html += `<div class="talent-kpi"><div class="talent-kpi__title">💰 薪资分布</div><div class="talent-kpi__list">`;
+  salary.forEach(s => { html += `<div class="talent-kpi__item"><span>${s.range}</span><b>${s.count}个</b></div>`; });
+  html += `</div></div>`;
+
+  html += `<div class="talent-kpi"><div class="talent-kpi__title">📈 趋势关键词</div><div class="talent-kpi__list">`;
+  keywords.forEach(k => { html += `<div class="talent-kpi__item"><span>${k.keyword}</span><b>+${k.growth_pct}%</b></div>`; });
+  html += `</div></div>`;
+
+  html += `<div class="talent-kpi"><div class="talent-kpi__title">🏢 监控公司</div><div class="talent-kpi__list">`;
+  (stats.top_queries || []).slice(0, 5).forEach(q => {
+    const name = q.query.replace('监控:', '');
+    html += `<div class="talent-kpi__item"><span>${name}</span><b>${q.cnt}个岗位</b></div>`;
+  });
+  html += `</div></div>`;
+
+  document.getElementById('talentKPI').innerHTML = html;
+}
+
+function renderTalentChips(queries) {
+  const companies = ['全部', ...queries.map(q => q.query.replace('监控:', '')).filter(n => n !== '游戏投流')];
+  document.getElementById('talentChips').innerHTML = companies.map(c =>
+    `<span class="talent-chip${_talentCompany === c ? ' active' : ''}" onclick="filterTalentCompany('${c}')">${c}</span>`
+  ).join('');
+}
+
+function filterTalentCompany(company) {
+  _talentCompany = company;
+  _talentPage = 1;
+  document.querySelectorAll('.talent-chip').forEach(el => el.classList.toggle('active', el.textContent === company));
+  document.getElementById('talentGrid').innerHTML = '';
+  loadJobs();
+}
+
+function doTalentSearch() {
+  _talentQuery = document.getElementById('talentSearchInput').value.trim();
+  _talentPage = 1;
+  _talentCompany = '全部';
+  document.querySelectorAll('.talent-chip').forEach(el => el.classList.toggle('active', el.textContent === '全部'));
+  document.getElementById('talentGrid').innerHTML = '';
+  loadJobs();
+}
+
+async function loadJobs() {
+  let q = _talentQuery;
+  if (_talentCompany !== '全部') q = `监控:${_talentCompany}`;
+  try {
+    const data = await fetchTalentData('/api/jobs', { q, page: _talentPage, size: 20 });
+    renderJobCards(data.jobs || [], _talentPage === 1);
+    if ((data.jobs || []).length < 20) {
+      document.getElementById('talentMore').style.display = 'none';
+    } else {
+      document.getElementById('talentMore').style.display = 'flex';
+    }
+  } catch(e) { console.warn('职位加载失败:', e); }
+}
+
+function loadMoreJobs() {
+  _talentPage++;
+  loadJobs();
+}
+
+function renderJobCards(jobs, replace) {
+  const grid = document.getElementById('talentGrid');
+  const html = jobs.map(job => {
+    const company = job.company || '未知';
+    const clr = COMPANY_CLR[company] || { fg:'#4E5969', bg:'#F4F5F7' };
+    const tags = Array.isArray(job.tags) ? job.tags : [];
+    const salary = job.salary || '';
+    const location = (job.location || '').replace(/\s*·\s*/g, ' · ');
+    return `<div class="job-card" onclick="window.open('${job.link}','_blank')">
+      <div class="job-card__head">
+        <div class="job-card__title">${job.title}</div>
+        ${salary ? `<div class="job-card__salary">${salary}</div>` : ''}
+      </div>
+      <div>
+        <span class="job-card__company" style="color:${clr.fg};background:${clr.bg}">${company}</span>
+      </div>
+      ${location ? `<div class="job-card__meta">📍 ${location}</div>` : ''}
+      ${tags.length ? `<div class="job-card__tags">${tags.map(t=>`<span class="job-card__tag">${t}</span>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  if (replace) grid.innerHTML = html;
+  else grid.innerHTML += html;
 }
 
 // ====== 侧栏筛选 ======
