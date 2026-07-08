@@ -17,6 +17,10 @@ node_modules/
 **/.cache/
 *.log
 
+# Large binary files
+*.pdf
+*.xlsx
+
 # OS
 .DS_Store
 Thumbs.db

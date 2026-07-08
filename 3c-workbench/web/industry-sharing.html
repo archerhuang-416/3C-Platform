@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行业分享 · 3C AI 工作台</title>
+<style>
+:root {
+  --brand: #4F46E5;
+  --brand-dark: #4338CA;
+  --brand-soft: #EEF2FF;
+  --bg: #F8F9FC;
+  --bg-elevated: #FFFFFF;
+  --border: #E5E7EB;
+  --border-light: #F0F1F3;
+  --text-1: #1F2329;
+  --text-2: #4B5563;
+  --text-3: #9CA3AF;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.06);
+
+  --gfk: #E63946; --gfk-soft: #FEF2F2;
+  --idc: #2563EB; --idc-soft: #EFF6FF;
+  --luotu: #059669; --luotu-soft: #ECFDF5;
+  --qunzhi: #D97706; --qunzhi-soft: #FFFBEB;
+  --bci: #7C3AED; --bci-soft: #F5F3FF;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg); color: var(--text-1);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+button { font-family: inherit; cursor: pointer; }
+
+.page { max-width: 1440px; margin: 0 auto; padding: 24px 32px 56px; }
+
+/* Banner */
+.banner {
+  border-radius: var(--radius); padding: 28px 32px; color: #fff;
+  background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #A78BFA 100%);
+  position: relative; overflow: hidden; margin-bottom: 20px;
+}
+.banner::before {
+  content: ""; position: absolute; right: -40px; top: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,255,255,.08);
+}
+.banner::after {
+  content: ""; position: absolute; right: 80px; bottom: -60px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(255,255,255,.05);
+}
+.banner__eyebrow { font-size: 12px; opacity: .8; margin-bottom: 6px; font-weight: 500; }
+.banner__title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.banner__desc { font-size: 13px; opacity: .85; margin-bottom: 14px; }
+.banner__row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.banner__pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  background: rgba(255,255,255,.18); backdrop-filter: blur(4px);
+}
+.banner__stats {
+  position: absolute; right: 32px; top: 50%; transform: translateY(-50%);
+  display: flex; gap: 24px; z-index: 2;
+}
+.banner__stat { text-align: center; }
+.banner__stat b { display: block; font-size: 26px; font-weight: 800; }
+.banner__stat span { font-size: 11px; opacity: .8; }
+
+/* Search & Filter bar */
+.toolbar {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 20px;
+  display: flex; gap: 12px; align-items: center; margin-bottom: 16px;
+}
+.toolbar__search {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 9px 14px;
+}
+.toolbar__search svg { width: 16px; height: 16px; color: var(--text-3); flex: none; }
+.toolbar__search input {
+  border: none; outline: none; background: transparent;
+  font-size: 13px; color: var(--text-1); width: 100%; font-family: inherit;
+}
+.toolbar__search input::placeholder { color: var(--text-3); }
+.toolbar__select {
+  padding: 9px 14px; border-radius: var(--radius-sm); font-size: 13px;
+  border: 1px solid var(--border); background: var(--bg-elevated);
+  color: var(--text-2); font-weight: 500; appearance: none;
+  padding-right: 30px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+  min-width: 120px;
+}
+
+/* Category filter section */
+.filter-section {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px;
+}
+.filter-section__header {
+  display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px;
+}
+.filter-section__title { font-size: 15px; font-weight: 700; }
+.filter-section__meta { font-size: 12px; color: var(--text-3); }
+.filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  background: var(--bg); color: var(--text-2); cursor: pointer;
+  border: 1px solid var(--border-light); transition: all .15s;
+}
+.filter-chip:hover { border-color: var(--border); background: #F3F4F6; }
+.filter-chip.active {
+  background: var(--brand-soft); color: var(--brand);
+  border-color: var(--brand); font-weight: 600;
+}
+.filter-chip__count {
+  font-size: 11px; color: var(--text-3); font-weight: 600;
+}
+.filter-chip.active .filter-chip__count { color: var(--brand); }
+
+/* Category groups */
+.cat-group {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
+}
+.cat-group__header {
+  display: flex; align-items: baseline; gap: 10px;
+  margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border-light);
+}
+.cat-group__title { font-size: 16px; font-weight: 700; }
+.cat-group__count { font-size: 12px; color: var(--text-3); }
+
+.quarter-header {
+  display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px;
+}
+.quarter-header__title { font-size: 14px; font-weight: 700; }
+.quarter-header__meta { font-size: 12px; color: var(--text-3); }
+
+/* Card grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px; margin-bottom: 20px;
+}
+
+/* Card */
+.card {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  transition: box-shadow .2s, transform .2s; cursor: pointer;
+}
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+.card__cover {
+  height: 160px; position: relative; overflow: hidden;
+  background: var(--bg);
+}
+.card__cover img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top center;
+  display: block; transition: transform .3s ease;
+}
+.card:hover .card__cover img { transform: scale(1.03); }
+
+.card__cover--fallback {
+  height: 160px; display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 16px 18px;
+  position: relative; overflow: hidden;
+}
+.card__cover--fallback::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(255,255,255,.06) 0%, transparent 50%);
+}
+.card__fallback-cat {
+  font-size: 16px; font-weight: 700; color: #fff; z-index: 2;
+}
+.card__fallback-meta {
+  font-size: 11px; color: rgba(255,255,255,.75); z-index: 2; margin-top: 4px;
+}
+
+.card__body { padding: 14px 18px 16px; }
+
+.card__tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.card__tag {
+  font-size: 11px; font-weight: 600; padding: 2px 8px;
+  border-radius: 4px; background: #F3F4F6; color: var(--text-2);
+}
+.card__tag--agency-gfk { background: var(--gfk-soft); color: var(--gfk); }
+.card__tag--agency-idc { background: var(--idc-soft); color: var(--idc); }
+.card__tag--agency-luotu { background: var(--luotu-soft); color: var(--luotu); }
+.card__tag--agency-qunzhi { background: var(--qunzhi-soft); color: var(--qunzhi); }
+.card__tag--agency-bci { background: var(--bci-soft); color: var(--bci); }
+
+.card__title {
+  font-size: 14px; font-weight: 700; color: var(--text-1);
+  margin-bottom: 8px; line-height: 1.45;
+}
+.card__desc {
+  font-size: 12px; color: var(--text-2); line-height: 1.6;
+  margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; line-clamp: 2;
+}
+.card__keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.card__keyword {
+  font-size: 11px; padding: 2px 8px; border-radius: 4px;
+  background: var(--bg); border: 1px solid var(--border-light); color: var(--text-2);
+}
+.card__views { font-size: 11px; color: var(--text-3); margin-bottom: 12px; }
+
+.card__actions { display: flex; gap: 8px; }
+.card__btn {
+  flex: 1; padding: 9px 12px; border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 600; text-align: center;
+  border: 1px solid var(--border); background: var(--bg-elevated);
+  color: var(--text-2); transition: all .12s;
+}
+.card__btn:hover { border-color: var(--brand); color: var(--brand); }
+.card__btn:disabled { opacity: .35; pointer-events: none; }
+.card__btn--primary {
+  background: var(--brand); border-color: var(--brand); color: #fff;
+}
+.card__btn--primary:hover { background: var(--brand-dark); }
+
+/* Agency cover gradients */
+.cover-gfk { background: linear-gradient(160deg, #3B82F6 0%, #6366F1 60%, #A78BFA 100%); }
+.cover-idc { background: linear-gradient(160deg, #6366F1 0%, #818CF8 60%, #C4B5FD 100%); }
+.cover-luotu { background: linear-gradient(160deg, #6366F1 0%, #7C3AED 60%, #A78BFA 100%); }
+.cover-qunzhi { background: linear-gradient(160deg, #4F46E5 0%, #7C3AED 60%, #C084FC 100%); }
+.cover-bci { background: linear-gradient(160deg, #7C3AED 0%, #9333EA 60%, #C084FC 100%); }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(15,23,42,.4); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--bg-elevated); border-radius: var(--radius);
+  width: 520px; max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,.15); overflow: hidden;
+  max-height: 85vh; overflow-y: auto;
+}
+.modal__cover {
+  height: 180px; position: relative; overflow: hidden;
+}
+.modal__cover img {
+  width: 100%; height: 100%; object-fit: cover; object-position: top center;
+}
+.modal__cover--fallback {
+  height: 180px; display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 20px 24px;
+}
+.modal__close {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(0,0,0,.35); color: #fff; border: none;
+  display: grid; place-items: center; font-size: 18px;
+  transition: background .12s;
+}
+.modal__close:hover { background: rgba(0,0,0,.55); }
+.modal__body { padding: 20px 24px 24px; }
+.modal__body h2 { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+.modal__info {
+  display: grid; grid-template-columns: 56px 1fr; gap: 6px 12px;
+  font-size: 13px; margin-bottom: 18px;
+}
+.modal__info dt { color: var(--text-3); font-weight: 500; }
+.modal__info dd { margin: 0; color: var(--text-1); font-weight: 500; }
+.modal__actions { display: flex; gap: 10px; }
+.modal__actions .btn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 11px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+  transition: all .12s; border: none;
+}
+.modal__actions .btn:disabled { opacity: .35; cursor: not-allowed; }
+.modal__actions .btn--video { background: var(--brand); color: #fff; }
+.modal__actions .btn--video:hover:not(:disabled) { background: var(--brand-dark); }
+.modal__actions .btn--pdf {
+  background: var(--bg); color: var(--text-2); border: 1px solid var(--border);
+}
+.modal__actions .btn--pdf:hover:not(:disabled) { border-color: var(--brand); color: var(--brand); }
+
+/* Empty */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text-3); }
+.empty-state b { display: block; font-size: 14px; color: var(--text-2); margin-bottom: 4px; }
+
+@media (max-width: 820px) {
+  .page { padding: 16px 14px 40px; }
+  .banner__stats { position: static; transform: none; margin-top: 14px; }
+  .toolbar { flex-wrap: wrap; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- Banner -->
+  <div class="banner">
+    <div class="banner__eyebrow">JD · 3C AI 情报库</div>
+    <div class="banner__title">行业分享课程库</div>
+    <div class="banner__desc">沉淀外部机构季度线上分享会内容，按品类、季度、机构管理会议链接与课件资料。</div>
+    <div class="banner__row">
+      <span class="banner__pill">来源：外部机构分享会</span>
+      <span class="banner__pill">覆盖：<b id="stat-categories">0</b> 个品类</span>
+      <span class="banner__pill">季度：2026 Q1</span>
+    </div>
+    <div class="banner__stats">
+      <div class="banner__stat"><b id="stat-total">0</b><span>课程总数</span></div>
+      <div class="banner__stat"><b id="stat-agencies">0</b><span>合作机构</span></div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar__search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="搜索课程、品类、机构、摘要..." id="search-input" oninput="onSearch()">
+    </div>
+    <select class="toolbar__select" id="quarter-filter" onchange="onFilterChange()">
+      <option value="">全部季度</option>
+      <option value="26Q1">2026 Q1</option>
+    </select>
+    <select class="toolbar__select" id="agency-filter" onchange="onFilterChange()">
+      <option value="">全部机构</option>
+      <option value="GFK">GFK</option>
+      <option value="IDC">IDC</option>
+      <option value="洛图">洛图</option>
+      <option value="群智">群智</option>
+    </select>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="filter-section">
+    <div class="filter-section__header">
+      <span class="filter-section__title">品类</span>
+      <span class="filter-section__meta" id="filter-meta"></span>
+    </div>
+    <div class="filter-chips" id="category-filters"></div>
+  </div>
+
+  <!-- Content -->
+  <div id="content"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div id="modal-cover-wrap">
+      <button class="modal__close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal__body">
+      <h2 id="modal-title"></h2>
+      <dl class="modal__info">
+        <dt>品类</dt><dd id="modal-category"></dd>
+        <dt>机构</dt><dd id="modal-agency"></dd>
+        <dt>讲师</dt><dd id="modal-speaker"></dd>
+        <dt>季度</dt><dd id="modal-quarter"></dd>
+      </dl>
+      <div class="modal__actions">
+        <button class="btn btn--video" id="modal-btn-video" onclick="openMeeting()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+          观看回放
+        </button>
+        <button class="btn btn--pdf" id="modal-btn-pdf" onclick="openPdf()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          查看课件
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHARE_DATA = [
+  { category: "存储产品", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/00a51abd4b2942d6", pdfUrl: "./data/机构报告/26Q1/GFK/GfK China Storgae Market Review 2026 Q1 - JD（存储）.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_GfK China Storgae Market Review 2026 Q1 - JD（存储）.jpg", desc: "覆盖移动硬盘、固态硬盘、存储卡等重点品类的零售表现、价格带变化和渠道趋势。", keywords: ["价格带","渠道","容量结构"] },
+  { category: "显示器", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/3e0ae0382a21c6d2", pdfUrl: "./data/机构报告/26Q1/GFK/GfK China MON Market Overview 2026Q1_JD（显示器）.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_GfK China MON Market Overview 2026Q1_JD（显示器）.jpg", desc: "中国显示器市场季度回顾，涵盖出货量、尺寸段、分辨率及电竞细分趋势。", keywords: ["电竞","4K","尺寸段"] },
+  { category: "平板电脑", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/ba04daae474c909f", pdfUrl: "./data/机构报告/26Q1/GFK/中国平板市场回顾与展望2026Q1_V1_JD_Mail（平板）.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_中国平板市场回顾与展望2026Q1_V1_JD_Mail（平板）.jpg", desc: "中国平板市场回顾与展望，品牌份额、价格段与消费端趋势分析。", keywords: ["品牌份额","消费趋势"] },
+  { category: "台式机", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/5769a81f88a0d4f8", pdfUrl: "./data/机构报告/26Q1/GFK/China DT Market Overview for JD 26Q1（台式机）.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_China DT Market Overview for JD 26Q1（台式机）.jpg", desc: "台式机及组装机市场概览，包含品牌表现、配置趋势和渠道变化。", keywords: ["组装机","品牌","渠道"] },
+  { category: "VR", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/4bbefaec4eb7ee9d", pdfUrl: "./data/机构报告/26Q1/GFK/China Virtual Reality Market Breifing_for JD 20260525（VR）.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_China Virtual Reality Market Breifing_for JD 20260525（VR）.jpg", desc: "中国VR市场简报，覆盖出货量、头部品牌及内容生态发展。", keywords: ["出货量","品牌","内容生态"] },
+  { category: "笔记本", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/6d6a56315d0f040e", pdfUrl: "./data/机构报告/26Q1/GFK/China NB Market Overview for JD 26Q1（笔记本电脑）.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_China NB Market Overview for JD 26Q1（笔记本电脑）.jpg", desc: "笔记本电脑市场整体回顾，轻薄本与游戏本细分、芯片平台占比。", keywords: ["轻薄本","游戏本","芯片平台"] },
+  { category: "智能手表/手环", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/c60cc216ace5828e", pdfUrl: "./data/机构报告/26Q1/GFK/【GfK】中国腕间穿戴市场2026Q1分析报告 JD 0526.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_【GfK】中国腕间穿戴市场2026Q1分析报告 JD 0526.jpg", desc: "腕间穿戴市场分析，智能手表与手环出货、价格段及品牌格局。", keywords: ["智能手表","手环","品牌格局"] },
+  { category: "键鼠", agency: "GFK", speaker: "GFK资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/f6ee4cfc8ac926d2", pdfUrl: "./data/机构报告/26Q1/GFK/京东键鼠分享-26Q1.pdf", coverUrl: "./data/机构报告/26Q1/covers/GFK_京东键鼠分享-26Q1.jpg", desc: "键盘鼠标市场分享，机械键盘、无线化趋势及电竞外设增长。", keywords: ["机械键盘","无线化","电竞"] },
+
+  { category: "打印机", agency: "IDC", speaker: "IDC资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/359a02c3f619816a", pdfUrl: "./data/机构报告/26Q1/IDC/【SC】2026Q1中国打印机市场回顾 - 京东.pdf", coverUrl: "./data/机构报告/26Q1/covers/IDC_【SC】2026Q1中国打印机市场回顾 - 京东.jpg", desc: "中国打印机市场回顾，喷墨与激光细分、家用与商用渠道表现。", keywords: ["喷墨","激光","家用"] },
+  { category: "平板/学习平板", agency: "IDC", speaker: "IDC资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/888e31b9b258520f", pdfUrl: "./data/机构报告/26Q1/IDC/PRC+Tutoring - Tablet - Market Analysis 26Q1_JD.pdf", coverUrl: "./data/机构报告/26Q1/covers/IDC_PRC+Tutoring - Tablet - Market Analysis 26Q1_JD.jpg", desc: "平板及学习平板市场分析，教育场景渗透率及品牌竞争态势。", keywords: ["学习平板","教育","品牌竞争"] },
+  { category: "投影", agency: "IDC", speaker: "IDC资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/060c94f79e1edc4a", pdfUrl: "./data/机构报告/26Q1/IDC/2026Q1 China Projector Deck Final Version.pdf", coverUrl: "./data/机构报告/26Q1/covers/IDC_2026Q1 China Projector Deck Final Version.jpg", desc: "中国投影仪市场季度回顾，家用与商用细分、亮度段与技术路线。", keywords: ["家用投影","亮度","激光"] },
+  { category: "智能穿戴", agency: "IDC", speaker: "IDC资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/1953d33e3b7b7d4d", pdfUrl: "./data/机构报告/26Q1/IDC/IDC月度腕戴市场分析-SO-26Q1 - JD.pdf", coverUrl: "./data/机构报告/26Q1/covers/IDC_IDC月度腕戴市场分析-SO-26Q1 - JD.jpg", desc: "IDC月度腕戴设备市场分析，出货量排名与增长趋势。", keywords: ["腕戴","出货量","增长"] },
+  { category: "智能安防", agency: "IDC", speaker: "IDC资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/59b34a940d0999d5", pdfUrl: "./data/机构报告/26Q1/IDC/IDC PRC Smart Home Devices Market Overview_2026Q1-安防.pdf", coverUrl: "./data/机构报告/26Q1/covers/IDC_IDC PRC Smart Home Devices Market Overview_2026Q1-安防.jpg", desc: "智能家居安防设备市场概览，摄像头与门锁出货及品牌份额。", keywords: ["摄像头","门锁","智能家居"] },
+  { category: "ARVR/AI眼镜", agency: "IDC", speaker: "IDC资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/07c48a3e2d498379", pdfUrl: "./data/机构报告/26Q1/IDC/2026Q1 IDC PRC Smart Eyewear Market Overview ByteDance.pdf", coverUrl: "./data/机构报告/26Q1/covers/IDC_2026Q1 IDC PRC Smart Eyewear Market Overview ByteDance.jpg", desc: "智能眼镜市场概览，AR/VR及AI眼镜出货与应用场景。", keywords: ["AR","AI眼镜","应用场景"] },
+  { category: "PC", agency: "IDC", speaker: "IDC资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/72fedd6737acf2fb", pdfUrl: "", coverUrl: "", desc: "IDC PC市场季度回顾与展望。", keywords: ["PC"] },
+
+  { category: "投影", agency: "洛图", speaker: "洛图资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/35abf6d2021d7d94", pdfUrl: "./data/机构报告/26Q1/洛图/1779327580456_RUNTO_2026年Q1中国智能投影市场分析报告.pdf", coverUrl: "./data/机构报告/26Q1/covers/洛图_1779327580456_RUNTO_2026年Q1中国智能投影市场分析报告.jpg", desc: "中国智能投影市场分析，品牌出货、亮度段分布与线上渠道。", keywords: ["智能投影","品牌","亮度"] },
+  { category: "学习平板", agency: "洛图", speaker: "洛图资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/57bfcfea7c72b394", pdfUrl: "./data/机构报告/26Q1/洛图/RUNTO_2026年Q1中国学习平板市场分析报告 for 京东.pdf", coverUrl: "./data/机构报告/26Q1/covers/洛图_RUNTO_2026年Q1中国学习平板市场分析报告 for 京东.jpg", desc: "学习平板市场分析，教育硬件出货及品牌竞争格局。", keywords: ["教育硬件","品牌","出货"] },
+  { category: "移动智慧屏", agency: "洛图", speaker: "洛图资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/57bfcfea7c72b394", pdfUrl: "./data/机构报告/26Q1/洛图/中国移动智慧屏市场研究报告-2026Q1.pdf", coverUrl: "./data/机构报告/26Q1/covers/洛图_中国移动智慧屏市场研究报告-2026Q1.jpg", desc: "移动智慧屏市场研究，便携屏与随身投影新品类发展。", keywords: ["便携屏","新品类"] },
+  { category: "电子纸", agency: "洛图", speaker: "洛图资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/57bfcfea7c72b394", pdfUrl: "./data/机构报告/26Q1/洛图/RUNTO_2026年Q1电子纸行业年度市场分析报告（JD）.pdf", coverUrl: "./data/机构报告/26Q1/covers/洛图_RUNTO_2026年Q1电子纸行业年度市场分析报告（JD）.jpg", desc: "电子纸行业年度分析，电子书阅读器及电子纸标签应用。", keywords: ["电子书","电子纸","阅读器"] },
+  { category: "监控摄像头", agency: "洛图", speaker: "洛图资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/d04d9a405481394d", pdfUrl: "./data/机构报告/26Q1/洛图/2026Q1中国摄像头市场发展报告.pdf", coverUrl: "./data/机构报告/26Q1/covers/洛图_2026Q1中国摄像头市场发展报告.jpg", desc: "中国摄像头市场发展报告，家用监控出货与技术升级。", keywords: ["家用监控","技术升级"] },
+  { category: "智能门锁", agency: "洛图", speaker: "洛图资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/461f4a82061b3dc4", pdfUrl: "", coverUrl: "", desc: "智能门锁市场分享，人脸识别与指纹方案渗透。", keywords: ["人脸识别","指纹"] },
+
+  { category: "PC", agency: "群智", speaker: "群智资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/7b83eb9c7b648c7a", pdfUrl: "", coverUrl: "", desc: "群智PC市场季度分析与趋势展望。", keywords: ["PC","趋势"] },
+  { category: "显示器", agency: "群智", speaker: "群智资深分析师", quarter: "26Q1", date: "2026-03", meetingUrl: "https://joyminutes.jd.com/minutes/d0bda4ba467f98dd", pdfUrl: "", coverUrl: "", desc: "群智显示器面板市场分析，面板价格与供需动态。", keywords: ["面板","价格","供需"] },
+];
+
+const AGENCY_MAP = {
+  "GFK": { cls: "gfk", label: "GFK" },
+  "IDC": { cls: "idc", label: "IDC" },
+  "洛图": { cls: "luotu", label: "洛图" },
+  "群智": { cls: "qunzhi", label: "群智" },
+  "BCI": { cls: "bci", label: "BCI" },
+};
+
+let activeCategory = "全部";
+let searchQuery = "";
+let currentItem = null;
+
+function init() {
+  renderFilters();
+  render();
+  updateStats();
+}
+
+function updateStats() {
+  const categories = new Set(SHARE_DATA.map(d => d.category));
+  const agencies = new Set(SHARE_DATA.map(d => d.agency));
+  document.getElementById('stat-total').textContent = SHARE_DATA.length;
+  document.getElementById('stat-categories').textContent = categories.size;
+  document.getElementById('stat-agencies').textContent = agencies.size;
+}
+
+function getFiltered() {
+  const qf = document.getElementById('quarter-filter').value;
+  const af = document.getElementById('agency-filter').value;
+  let data = SHARE_DATA;
+  if (activeCategory !== "全部") data = data.filter(d => d.category === activeCategory);
+  if (qf) data = data.filter(d => d.quarter === qf);
+  if (af) data = data.filter(d => d.agency === af);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    data = data.filter(d =>
+      d.category.toLowerCase().includes(q) ||
+      d.agency.toLowerCase().includes(q) ||
+      (d.desc && d.desc.toLowerCase().includes(q)) ||
+      (d.keywords && d.keywords.some(k => k.toLowerCase().includes(q)))
+    );
+  }
+  return data;
+}
+
+function renderFilters() {
+  const catCounts = {};
+  SHARE_DATA.forEach(d => { catCounts[d.category] = (catCounts[d.category] || 0) + 1; });
+  const categories = Object.keys(catCounts);
+  const withPdf = SHARE_DATA.filter(d => d.pdfUrl).length;
+  document.getElementById('filter-meta').textContent = `${categories.length} 类 · ${withPdf} 条已补资料`;
+
+  const container = document.getElementById('category-filters');
+  let html = `<span class="filter-chip ${activeCategory === '全部' ? 'active' : ''}" onclick="filterCategory('全部')">全部 <span class="filter-chip__count">${SHARE_DATA.length}</span></span>`;
+  categories.forEach(c => {
+    html += `<span class="filter-chip ${c === activeCategory ? 'active' : ''}" onclick="filterCategory('${c}')">${c} <span class="filter-chip__count">${catCounts[c]}</span></span>`;
+  });
+  container.innerHTML = html;
+}
+
+function filterCategory(cat) { activeCategory = cat; renderFilters(); render(); }
+function onFilterChange() { render(); }
+function onSearch() { searchQuery = document.getElementById('search-input').value; render(); }
+
+function render() {
+  const filtered = getFiltered();
+  const grouped = {};
+  filtered.forEach(item => {
+    if (!grouped[item.category]) grouped[item.category] = {};
+    if (!grouped[item.category][item.quarter]) grouped[item.category][item.quarter] = [];
+    grouped[item.category][item.quarter].push(item);
+  });
+
+  const content = document.getElementById('content');
+  if (Object.keys(grouped).length === 0) {
+    content.innerHTML = `<div class="empty-state"><b>暂无匹配的课程</b>请尝试其他筛选条件</div>`;
+    return;
+  }
+
+  let html = '';
+  const quarterOrder = ['26Q1', '25Q4'];
+
+  Object.keys(grouped).forEach(category => {
+    const quarters = grouped[category];
+    const totalInCat = Object.values(quarters).reduce((sum, arr) => sum + arr.length, 0);
+
+    html += `<div class="cat-group">`;
+    html += `<div class="cat-group__header"><span class="cat-group__title">${category}</span><span class="cat-group__count">${totalInCat} 场课程</span></div>`;
+
+    quarterOrder.forEach(q => {
+      if (!quarters[q]) return;
+      const agencyCount = new Set(quarters[q].map(i => i.agency)).size;
+      html += `<div class="quarter-header"><span class="quarter-header__title">${formatQuarter(q)}</span><span class="quarter-header__meta">${quarters[q].length} 场课程 · ${agencyCount} 个机构位</span></div>`;
+      html += `<div class="card-grid">`;
+      quarters[q].forEach(item => {
+        const idx = SHARE_DATA.indexOf(item);
+        html += renderCard(item, idx);
+      });
+      html += `</div>`;
+    });
+    html += `</div>`;
+  });
+
+  content.innerHTML = html;
+}
+
+function renderCard(item, idx) {
+  const ag = AGENCY_MAP[item.agency] || { cls: 'gfk', label: item.agency };
+  const coverHtml = item.coverUrl
+    ? `<div class="card__cover"><img src="${item.coverUrl}" alt="${item.category}" loading="lazy"></div>`
+    : `<div class="card__cover--fallback cover-${ag.cls}"><span class="card__fallback-cat">${item.category}</span><span class="card__fallback-meta">${formatQuarter(item.quarter)} · ${ag.label}</span></div>`;
+
+  const keywordsHtml = item.keywords ? item.keywords.map(k => `<span class="card__keyword">${k}</span>`).join('') : '';
+
+  return `
+    <div class="card" onclick="openDetail(${idx})">
+      ${coverHtml}
+      <div class="card__body">
+        <div class="card__tags">
+          <span class="card__tag">${item.category}</span>
+          <span class="card__tag">${formatQuarter(item.quarter)}</span>
+          <span class="card__tag card__tag--agency-${ag.cls}">${ag.label}</span>
+        </div>
+        <div class="card__title">${formatQuarter(item.quarter)} ${item.category}市场季度分享</div>
+        <div class="card__desc">${item.desc || ''}</div>
+        ${keywordsHtml ? `<div class="card__keywords">${keywordsHtml}</div>` : ''}
+        <div class="card__actions">
+          <button class="card__btn ${item.meetingUrl ? '' : ''}" onclick="event.stopPropagation();openMeetingDirect(${idx})" ${!item.meetingUrl ? 'disabled' : ''}>会议链接</button>
+          <button class="card__btn ${item.pdfUrl ? '' : ''}" onclick="event.stopPropagation();openPdfDirect(${idx})" ${!item.pdfUrl ? 'disabled' : ''}>课件</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function formatQuarter(q) {
+  return '20' + q.slice(0, 2) + ' ' + q.slice(2);
+}
+
+// Modal
+function openDetail(idx) {
+  currentItem = SHARE_DATA[idx];
+  if (!currentItem) return;
+  const ag = AGENCY_MAP[currentItem.agency] || { cls: 'gfk' };
+  const wrap = document.getElementById('modal-cover-wrap');
+
+  if (currentItem.coverUrl) {
+    wrap.className = 'modal__cover';
+    wrap.innerHTML = `<button class="modal__close" onclick="closeModal()">&times;</button><img src="${currentItem.coverUrl}" alt="">`;
+  } else {
+    wrap.className = 'modal__cover--fallback cover-' + ag.cls;
+    wrap.innerHTML = `<button class="modal__close" onclick="closeModal()">&times;</button><span class="card__fallback-cat">${currentItem.category}</span><span class="card__fallback-meta">${formatQuarter(currentItem.quarter)} · ${ag.label}</span>`;
+  }
+
+  document.getElementById('modal-title').textContent = formatQuarter(currentItem.quarter) + ' ' + currentItem.category + '市场季度分享';
+  document.getElementById('modal-category').textContent = currentItem.category;
+  document.getElementById('modal-agency').textContent = currentItem.agency;
+  document.getElementById('modal-speaker').textContent = currentItem.speaker;
+  document.getElementById('modal-quarter').textContent = formatQuarter(currentItem.quarter);
+
+  const btnVideo = document.getElementById('modal-btn-video');
+  const btnPdf = document.getElementById('modal-btn-pdf');
+  btnVideo.disabled = !currentItem.meetingUrl;
+  btnPdf.disabled = !currentItem.pdfUrl;
+
+  document.getElementById('modal-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+  currentItem = null;
+}
+
+function openMeeting() { if (currentItem && currentItem.meetingUrl) window.open(currentItem.meetingUrl, '_blank'); }
+function openPdf() { if (currentItem && currentItem.pdfUrl) window.open(currentItem.pdfUrl, '_blank'); }
+function openMeetingDirect(idx) { const item = SHARE_DATA[idx]; if (item && item.meetingUrl) window.open(item.meetingUrl, '_blank'); }
+function openPdfDirect(idx) { const item = SHARE_DATA[idx]; if (item && item.pdfUrl) window.open(item.pdfUrl, '_blank'); }
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+init();
+</script>
+</body>
+</html>

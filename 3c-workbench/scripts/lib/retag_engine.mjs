@@ -22,6 +22,10 @@ import {
   countCanonicalInBody,
   firstParagraph,
   normalize,
+  isCategoryReport,
+  isAIProductReport,
+  getAIExclusions,
+  scanAIProducts,
 } from "./retag_rules.mjs";
 
 // 阈值（与规则文档 §6 对齐）
@@ -36,6 +40,8 @@ const CROSS_PLATFORM_HINTS = [
   "中外竞争", "云厂商", "竞争格局", "宏观",
   "AI 原生应用", "AI原生应用",
   "产业链", "全行业",
+  "电商平台表现", "平台表现分析", "平台对比",
+  "各平台", "多平台",
 ];
 
 function looksCrossPlatform(title, candidates) {
@@ -150,6 +156,8 @@ async function branchD({ title, body, expertIntro }) {
 2. 只有报告"主要在讲"某一个具体平台/品牌（中心度 ≥ 0.6），才归到对应类目；其他被提到的实体放在 tags 里。
 3. 宁可归"其他"也不要硬塞。
 4. 即时零售场景词："外卖/闪购/到家/秒送/小时达/即时零售"出现时优先考虑即时零售平台。
+5. AI 产品归 AI：豆包、千问、通义、Kimi、DeepSeek 等大模型/AI 产品报告，归"其他"并在 tags 里注明相关平台，**不要**因为豆包是字节的就归字节、千问是阿里的就归阿里。
+6. 品类/行业分析归"其他"：如果报告主题是某个商品品类（如"生活用纸""家电""美妆"等）在各平台的表现分析，归"其他"，各平台只作为 tags。
 
 输出 canonical 必须严格是下面之一（或"其他"）：
 拼多多、阿里、字节、苹果、华为、小米、OPPO、vivo、荣耀、美团闪购、京东秒送、淘宝闪购、其他
@@ -204,6 +212,52 @@ export async function retagReport({ item, expertIntro = "" }) {
   let candidates = scanCanonicals(title);
   // 主题标签：从标题+摘要扫
   const topicTags = scanTopicTags(`${title}\n${item.sum || ""}`);
+
+  // ─── 新规则 1：AI 产品报告 → 归"其他/AI"，不归母公司平台 ───
+  if (isAIProductReport(title)) {
+    const aiExclusions = getAIExclusions(title);
+    // 从候选中移除因 AI 产品引发的母公司
+    const filteredCandidates = candidates.filter((c) => !aiExclusions.includes(c));
+    // 确保 AI 在 topicTags 中
+    if (!topicTags.includes("AI")) topicTags.push("AI");
+    // 如果移除后没有候选了（纯 AI 产品讨论），直接归"其他/AI"
+    if (filteredCandidates.length === 0) {
+      return finalize({
+        item,
+        final_primary: "AI",
+        final_dimension: "其他",
+        final_tags: candidates.slice(0, 5),
+        topic_tags: topicTags,
+        matched_rule: "ai-product",
+        candidates,
+        ai_used: false,
+        ai_scores: {},
+        ai_reason: `AI 产品报告（${scanAIProducts(title).map(h => h.product).join("/")}），归类到 AI`,
+        confidence: 0.9,
+        review_status: "auto",
+      });
+    }
+    // 仍有候选（AI 产品 + 其他非 AI 实体），用过滤后的候选继续
+    candidates = filteredCandidates;
+  }
+
+  // ─── 新规则 2：品类/行业分析报告 → 归"其他"，平台仅作标签 ───
+  if (isCategoryReport(title) && candidates.length > 0) {
+    return finalize({
+      item,
+      final_primary: "其他",
+      final_dimension: "其他",
+      final_tags: candidates.slice(0, 5),
+      topic_tags: topicTags,
+      matched_rule: "category-report",
+      candidates,
+      ai_used: false,
+      ai_scores: {},
+      ai_reason: "品类/行业分析报告，提到的平台仅为数据引用，主分类落'其他'",
+      confidence: 0.9,
+      review_status: "auto",
+    });
+  }
 
   // 跨平台贯穿规则
   if (looksCrossPlatform(title, candidates)) {

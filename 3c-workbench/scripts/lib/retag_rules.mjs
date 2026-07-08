@@ -87,11 +87,70 @@ export const CATEGORIES = [
     aliases: ["淘宝闪购", "淘宝即时零售", "饿了么"],
     entities: [],
   },
+
+  // 其他维度：AI
+  {
+    canonical: "AI",
+    dimension: "其他",
+    aliases: ["AI芯片", "AI大模型", "大模型", "人工智能", "AIGC", "AGI", "LLM", "算力"],
+    entities: ["GPU", "TPU", "NPU", "推理", "预训练", "微调", "RAG", "Agent"],
+  },
+];
+
+// AI 产品 → 不触发母公司平台分类，改走"其他 + AI"标签
+// key = AI 产品名/别名，value = 对应母公司 canonical（用于从候选中排除）
+export const AI_PRODUCTS = {
+  "豆包": "字节",
+  "Doubao": "字节",
+  "扣子": "字节",
+  "Coze": "字节",
+  "千问": "阿里",
+  "通义千问": "阿里",
+  "通义": "阿里",
+  "Qwen": "阿里",
+  "文心一言": null,
+  "文心": null,
+  "ERNIE": null,
+  "DeepSeek": null,
+  "深度求索": null,
+  "Kimi": null,
+  "月之暗面": null,
+  "智谱": null,
+  "ChatGLM": null,
+  "GLM": null,
+  "讯飞星火": null,
+  "星火": null,
+  "百川": null,
+  "MiniMax": null,
+  "腾讯混元": null,
+  "混元": null,
+  "Gemini": null,
+  "ChatGPT": null,
+  "GPT": null,
+  "OpenAI": null,
+  "Copilot": null,
+};
+
+// AI 产品别名按长度降序（扫描用）
+export const AI_PRODUCT_PAIRS = (() => {
+  const pairs = Object.entries(AI_PRODUCTS).map(([alias, parent]) => ({ alias, parent }));
+  pairs.sort((a, b) => b.alias.length - a.alias.length);
+  return pairs;
+})();
+
+// 品类关键词：标题含这些词时，报告本质是品类/行业分析，不应归到具体平台
+export const CATEGORY_KEYWORDS = [
+  "品类", "类目", "类目分析", "品类分析",
+  "生活用纸", "纸类", "纸巾", "家电", "大家电", "小家电", "厨电",
+  "家具", "建材", "食品", "饮料", "酒水", "美妆", "护肤", "个护",
+  "母婴", "服饰", "鞋靴", "箱包", "运动", "户外", "宠物",
+  "图书", "数码配件", "电脑", "手机市场", "智能手机市场",
+  "汽车", "医药", "保健", "珠宝", "钟表",
+  "市场规模", "行业规模", "渗透率", "市场份额分析",
 ];
 
 // 主题标签（不属于上面任何板块，但常出现）—— 仅用于"标签"，不作为主分类候选
 export const TOPIC_TAGS = [
-  "AI",
   "芯片",
   "补贴",
   "UE",
@@ -211,6 +270,45 @@ export function countCanonicalInBody(canonical, body) {
   for (const a of cat.aliases) total += countOccurrences(hay, a);
   for (const e of cat.entities) total += countOccurrences(hay, e);
   return total;
+}
+
+// 检查标题是否以品类/行业分析为主题（即使提到平台也只是引用数据）
+export function isCategoryReport(title) {
+  if (!title) return false;
+  const t = normalize(title);
+  return CATEGORY_KEYWORDS.some((kw) => t.includes(kw));
+}
+
+// 扫描文本中的 AI 产品提及，返回 [{product, parent}]（parent 可能为 null）
+export function scanAIProducts(text) {
+  if (!text) return [];
+  const t = normalize(text);
+  const hits = [];
+  const seen = new Set();
+  for (const { alias, parent } of AI_PRODUCT_PAIRS) {
+    if (t.includes(alias) && !seen.has(alias)) {
+      seen.add(alias);
+      hits.push({ product: alias, parent });
+    }
+  }
+  return hits;
+}
+
+// 判断标题是否为 AI 产品报告（主题在讲 AI 产品，不应归到母公司平台）
+export function isAIProductReport(title) {
+  if (!title) return false;
+  const hits = scanAIProducts(title);
+  return hits.length > 0;
+}
+
+// 获取因 AI 产品规则需要从候选中排除的 canonical 列表
+export function getAIExclusions(title) {
+  const hits = scanAIProducts(title);
+  const exclusions = new Set();
+  for (const { parent } of hits) {
+    if (parent) exclusions.add(parent);
+  }
+  return [...exclusions];
 }
 
 // 简单首段提取：用换行/标点切，取前 200 字

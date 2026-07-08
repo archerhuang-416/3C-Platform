@@ -1,0 +1,7 @@
+name = "3c-counter"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "COUNTER"
+id = "112e06e89d344ce0a3c13fef0dcbade8"
