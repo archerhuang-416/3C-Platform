@@ -1447,9 +1447,7 @@ function renderSharingCards() {
 }
 
 // ====== 竞对招聘库模块 ======
-const TALENT_API = 'http://120.53.242.129:9090';
-const TALENT_TOKEN = 'KP1WxEZm_ZMgD4fwpKCGppk-wSB_b1k3-BQEUnVlLK4';
-const TALENT_HEADERS = { 'Authorization': `Bearer ${TALENT_TOKEN}` };
+const TALENT_API = '/api/talent';
 const COMPANY_CLR = {
   '腾讯': { fg:'#07C160', bg:'#E8F9EF' },
   '拼多多集团-PDD': { fg:'#E02E24', bg:'#FEF2F2' },
@@ -1461,9 +1459,10 @@ let _talentQuery = '';
 let _talentCompany = '全部';
 
 async function fetchTalentData(endpoint, params = {}) {
-  const url = new URL(TALENT_API + endpoint);
+  const url = new URL(window.location.origin + TALENT_API);
+  url.searchParams.set('endpoint', endpoint);
   Object.entries(params).forEach(([k,v]) => { if (v) url.searchParams.set(k, v); });
-  const res = await fetch(url, { headers: TALENT_HEADERS });
+  const res = await fetch(url);
   return res.json();
 }
 
