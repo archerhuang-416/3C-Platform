@@ -1283,30 +1283,34 @@ function renderSharingBoard(container) {
   renderSharingCards();
 }
 
-// ====== 统计计数（Cloudflare Workers API）======
-const COUNTER_API = ''; // 内网环境不使用外部计数服务，浏览数写死在 HTML 中
+// ====== 统计计数（Vercel Serverless + KV）======
+const COUNTER_API = '/api/pageview';
 const _courseCountCache = {};
 
 async function fetchStats() {
-  if (!COUNTER_API) return;
   try {
-    const res = await fetch(COUNTER_API + '/api/stats');
+    const res = await fetch(COUNTER_API);
     const data = await res.json();
     const metaViews = document.getElementById('metaViews');
-    if (metaViews) metaViews.textContent = data.pageTotal || 0;
+    if (metaViews) metaViews.textContent = data.total || 0;
     const metaWeekly = document.getElementById('metaWeekly');
-    if (metaWeekly) metaWeekly.textContent = data.pageWeek || 0;
-    Object.entries(data.courses || {}).forEach(([idx, count]) => {
-      _courseCountCache[idx] = count;
-      const el = document.getElementById('lc-' + idx);
-      if (el) el.textContent = count;
-    });
+    if (metaWeekly) metaWeekly.textContent = data.week || 0;
+    const bannerWeekly = document.getElementById('bannerWeeklyViews');
+    if (bannerWeekly) bannerWeekly.textContent = data.week || 0;
   } catch(e) { console.warn('统计加载失败:', e); }
 }
 
 async function recordPageview() {
-  if (!COUNTER_API) return;
-  try { await fetch(COUNTER_API + '/api/pageview', { method: 'POST' }); } catch(e) {}
+  try {
+    const res = await fetch(COUNTER_API, { method: 'POST' });
+    const data = await res.json();
+    const metaViews = document.getElementById('metaViews');
+    if (metaViews) metaViews.textContent = data.total || 0;
+    const metaWeekly = document.getElementById('metaWeekly');
+    if (metaWeekly) metaWeekly.textContent = data.week || 0;
+    const bannerWeekly = document.getElementById('bannerWeeklyViews');
+    if (bannerWeekly) bannerWeekly.textContent = data.week || 0;
+  } catch(e) {}
 }
 
 function getLearnCount(idx) {
